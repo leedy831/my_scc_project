@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="ko">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+
+        <title>개인프로젝트 | ITE</title>
+
+        <!-- style -->
+        <style type="text/css">
+            .container {
+                padding-top: 40px;
+                background-color: lightblue;
+            }
+
+            .select-date {
+                margin-bottom: 40px;
+                background-color: lightgreen;
+            }
+
+            .archive-box {
+                background-color: blue;
+            }
+
+            .nav-tabs {
+                border-bottom: none;
+            }
+
+            .nav-tabs .nav-link.active {
+                background-color: #e2e2e2;
+                border-bottom: #e2e2e2;
+                font-weight: bold;
+            }
+
+            .tab-pane.active .tab-pane-header {
+                height: 100%;
+                padding: 2rem;
+                background-color: #e2e2e2;
+                border-top-right-radius: .5rem;
+                border-top-left-radius: .5rem;
+                margin-bottom: 1rem;
+            }
+
+            .tab-pane:first-child .tab-pane-header {
+                border-top-left-radius: 0;
+            }
+
+            .clearfix::after {
+                content: "";
+                display: block;
+                clear: both;
+            }
+
+            .search-btn {
+                background-color: orange;
+                float: right;
+                margin: 10px;
+            }
+
+            .box-articles {
+                background-color: hotpink;
+                height: 80%;
+                width: 100%;
+                margin: auto;
+            }
+
+            .article {
+                float: left;
+                width: 300px;
+                height: 100px;
+                background-color: lightgrey;
+                border: black 1px solid;
+                margin: 25px;
+                padding: 9px;
+                font-size: 13px;
+            }
+
+            .type {
+                background-color: lightblue;
+                margin-bottom: 3px;
+            }
+
+            .title {
+                background-color: lightgreen;
+                margin-bottom: 6px;
+            }
+
+            .author {
+                background-color: lightblue;
+                display: inline;
+            }
+
+            .date {
+                background-color: lightblue;
+                display: inline;
+                float: right;
+            }
+
+        </style>
+        <script>
+            $(document).ready(function () {
+                updateDateOptions();
+                showArticles();
+                toggleTab();
+            })
+
+            function updateDateOptions() {
+                $.ajax({
+                    type: "GET",
+                    url: "/date",
+                    data: {},
+                    success: function (response) {
+                        let datetime = response["datetime"];
+                        let cur_year = datetime["cur_year"];
+                        let year_list = datetime["year_list"];
+                        let cur_month = datetime["cur_month"];
+                        let month_list = [ "", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+
+                        makeYearOptions(year_list, cur_year);
+                        makeMonthOptions(month_list, cur_month);
+                    }
+                })
+            }
+
+            function makeYearOptions(year_list, cur_year) {
+                for (let i = 0; i < year_list.length; i++) {
+                    if (year_list[i] == cur_year) {
+                        tempHtml = `<option selected value=${year_list[i]}>${year_list[i]}</option>`
+                    } else {
+                        tempHtml = `<option value=${year_list[i]}>${year_list[i]}</option>`
+                    }
+                    $("#select-year").append(tempHtml);
+                }
+            }
+
+            function makeMonthOptions(month_list, cur_month) {
+                for (let i = 1; i < month_list.length; i++) {
+                    if (String(i) == cur_month) {
+                        tempHtml = `<option selected value=${String(i)}>${month_list[i]}</option>`
+                    } else {
+                        tempHtml = `<option value=${String(i)}>${month_list[i]}</option>`
+                    }
+                    $("#select-month").append(tempHtml);
+                }
+            }
+
+            function showArticles() {
+                $("div#myTabContent > div.active > div.tab-pane-header > div.box-articles").empty()
+
+                $.ajax({
+                    type: "GET",
+                    url: "/list",
+                    data: {},
+                    success: function (response) {
+                        let articles = response["archives"];
+                        for (let i = 0; i < articles.length; i++) {
+                            makeArticles(articles[i]["type"], articles[i]["title_html"], articles[i]["author"], articles[i]["date"])
+                        }
+                    }
+                })
+            }
+
+            function makeArticles(type, title_html, author, date) {
+                let temp_html = `<div class="article">
+                                    <p class="type">"${type}"</p>
+                                    <p class="title">"${title_html}"</p>
+                                    <p class="author">"${author}"</p>
+                                    <p class="date">"${date}"</p>
+                                 </div>`;
+                $("div#myTabContent > div.active > div.tab-pane-header > div.box-articles").append(temp_html);
+            }
+
+            function toggleTab() {
+                if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+                return $('a[data-toggle="tab"]').on('shown', function (e) {
+                    return location.hash = $(e.target).attr('href').substr(1);
+                });
+            }
+
+            function getUrlContents() {
+                let curSection = $('ul#myTab > li.nav-item > a.active').attr('name');
+                let curSubsec = $('div#myTabContent > div.active > div.tab-pane-header > ul > li.nav-item > a.active').attr('name');
+                let curYear = $('#select-year').val();
+                let curMonth = $('#select-month').val();
+
+                getArticles(curSection, curSubsec, curYear, curMonth);
+            }
+
+            function getArticles(curSection, curSubsec, curYear, curMonth) {
+                $.ajax({
+                    type: "POST",
+                    url: "/list",
+                    data: {
+                        section_give: curSection,
+                        subsec_give: curSubsec,
+                        year_give: curYear,
+                        month_give: curMonth
+                    },
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            showArticles();
+                            alert("기사 목록 불러오기 완료!");
+                        } else {
+                            alert("해당 기사 없음!");
+                        }
+                    }
+                })
+            }
+
+        </script>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-light bg-light justify-content-between">
+            <a class="navbar-brand">ITE</a>
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search by URL" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </nav>
+
+        <div class="container">
+            <div class="select-date">
+                <select class="select-btn" id="select-year">
+                </select>
+                <select class="select-btn" id="select-month">
+                </select>
+                <button onclick="getUrlContents();">Search</button>
+            </div>
+
+            <div class="archive-box">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#agora" name="agora" role="tab" aria-controls="home" aria-expanded="true">Agorà</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#attualita" name="attualita" role="tab" aria-controls="profile">Attualità</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#chiesa" name="chiesa" role="tab"
+                           aria-controls="profile">Chiesa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#economia" name="economia" role="tab" aria-controls="profile">Economia</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#europa" name="europa" role="tab"
+                           aria-controls="profile">Europa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#famiglia-e-vita" name="famiglia-e-vita" role="tab"
+                           aria-controls="profile">Famiglia E Vita</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#mondo" role="tab" name="mondo" aria-controls="profile">Mondo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#papa" role="tab" name="papa" aria-controls="profile">Papa</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="agora" role="tabpanel" aria-labelledby="1-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="arte">Arte</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="cultura">Cultura</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="scienza-e-tecnologia">Scienza e Tecnologia</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="spettacoli">Spettacoli</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="sport">Sport</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix">
+                                <div class="article">
+                                    <p class="type">Articolo</p>
+                                    <p class="title"><em>Dibattito</em> <span>Oltre la moda del selfie: musei e social, un rapporto virtuale o virtuoso?</span>
+                                    </p>
+                                    <p class="author">Irene Baldriga</p>
+                                    <p class="date">13/08/2020</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="attualita" role="tabpanel" aria-labelledby="2-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="azzardo">Azzardo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="caporalato">Caporalato</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="carceri">Carceri</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="caritas">Caritas</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="infortuni-sul-lavoro">Infortuni Sul Lavoro</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="legalita">Legalità</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="migranti">Migranti</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="politica">Politica</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="scuola">Scuola</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="terra-dei-fuochi">Terra Dei Fuochi</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="chiesa" role="tabpanel" aria-labelledby="3-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="benedetto-xvi">Benedetto XVI</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="cei">Cei</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="documenti-cei">Documenti Cei</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="ecumenismo">Ecumenismo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giovani">Giovani</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giubileo">Giubileo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="gmg">Gmg</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="lotta-agli-abusi">Lotta Agli Abusi</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="santi-e-beati">Santi E Beati</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="economia" role="tabpanel" aria-labelledby="4-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="bes">Bes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="lavoro">Lavoro</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="motori">Motori</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="risparmio">Risparmio</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="sviluppo-felice">Sviluppo Felice</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="terzo-settore">Terzo Settore</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="europa" role="tabpanel" aria-labelledby="5-tab">
+                        <div class="tab-pane-header">
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="famiglia-e-vita" role="tabpanel" aria-labelledby="6-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="aborto">Aborto</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="fecondazione-assistita">Fecondazione Assistita</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="fine-vita">Fine Vita</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="gender">Gender</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="unioni-civili">Unioni Civili</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="utero-in-affitto">Utero In Affitto</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="mondo" role="tabpanel" aria-labelledby="7-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="africa">Africa</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="america-latina">America Latina</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="asia">Asia</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="asia-bibi">Asia Bibi</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="cristiani-perseguitati">Cristiani Perseguitati</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="iraq-e-siria">Iraq E Siria</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="terrorismo">Terrorismo</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="papa" role="tabpanel" aria-labelledby="8-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="commenti">Commenti</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="le-parole">Le Parole</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="santa-marta">Santa Marta</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="viaggi">Viaggi</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
+<!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
+<!--                crossorigin="anonymous"></script>-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+    </body>
+</html>
