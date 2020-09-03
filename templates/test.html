@@ -1,0 +1,379 @@
+<html lang="ko">
+
+  <head>
+      <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+
+
+    <title>HTML2PDF</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"></script>
+
+      <style type="text/css">
+            body {
+                background-color: rgb(240,243,244);
+            }
+
+            nav {
+                background-color: rgb(255,255,255);
+                box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.2);
+            }
+
+            .nav-title {
+                font-weight: 900;
+            }
+
+            button.export-btn{
+                font-size: 13px;
+                font-weight: 500;
+                height: 36px;
+                padding: 0px 16px;
+                color: white;
+                background-color: rgb(28,115,231);
+                border: 0px;
+                border-radius: 4px;
+            }
+
+            .container {
+                background-color: rgb(248,249,250);
+                padding: 25px 15px 15px;
+                height: 94.4vh;
+            }
+
+            #myNews {
+                background-color: white;
+                border-radius: .2rem;
+                float: left;
+                height: 100%;
+                width: 660px;
+                padding: 20px 30px;
+                margin: 0px 10px;
+                overflow: auto;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            #textEdit {
+                font-size: 13px;
+                background-color: white;
+                border-radius: .2rem;
+                float: right;
+                width: 400px;
+                height: 100%;
+                padding: 40px 30px 20px;
+                margin: 0px 10px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            h1 {
+                font-size: 35px;
+                font-weight: 900;
+            }
+
+            .myTitle:hover {
+                background-color: rgb(231,240,254);
+                color: rgb(28,115,231);
+                transition: 0.1s;
+            }
+
+            h2 {
+                font-size: 16px;
+                font-weight: 500;
+                margin-bottom: 15px;
+                padding-left: 5px;
+            }
+
+            div.athr-date {
+                font-weight: 500;
+                font-size: 13px;
+            }
+
+            span.author {
+                color: #004a94;
+            }
+
+            span.date {
+                color: #727274;
+            }
+
+            .myDes {
+                margin: 30px 0px;
+                position: relative;
+            }
+
+            div.des {
+                font-size: 16px;
+                font-style: italic;
+                min-height: 1px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding-left: 5px;
+            }
+
+            div.des:hover {
+                background-color: rgb(231,240,254);
+                color: rgb(28,115,231);
+                transition: 0.1s;
+            }
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+
+            .text {
+                font-size: 16px;
+                color: #333333;
+                text-align: justify;
+                margin: 40px 0px;
+            }
+
+            .text > .paragraph {
+                padding-bottom: 25px;
+            }
+
+            p.origin {
+                margin: 0px;
+                padding: 5px 0px;
+            }
+
+            .paragraph > p:hover {
+                background-color: rgb(231,240,254);
+                color: rgb(28,115,231);
+                transition: 0.1s;
+            }
+
+
+            .myOrigin {
+                height: 200px;
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                margin-bottom: 30px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            #typePointer {
+                height: 36px;
+                width: 100%;
+                border-bottom: 1px solid #dadce0;
+                padding: 8px 16px;
+                font-size: 13px;
+                color: #495057;
+                font-weight: bold;
+            }
+
+            .originText {
+                height: 164px;
+                padding: 1rem;
+                overflow: auto;
+                text-align: justify;
+            }
+
+            .tab-content {
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                margin-bottom: 30px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            ul.nav {
+                border: 0px;
+            }
+
+            a.nav-link.active {
+                border: 0px;
+                border-radius: 8px;
+            }
+
+            .nav-tabs .nav-link.active {
+                font-weight: bold;
+            }
+
+            .tab-pane-header {
+                border-top: 1px solid #dadce0;
+                height: 164px;
+                padding: 1rem;
+                overflow: auto;
+            }
+
+            .ko {
+                text-align: justify;
+            }
+
+            .en {
+                text-align: justify;
+            }
+
+            .mytrans textarea {
+                display: block;
+                width: 100%;
+                height: 200px;
+                margin: 15px 0px 40px;
+                padding: 1rem;
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            .save-btn {
+                float: right;
+                font-size: 15px;
+                font-weight: 500;
+                height: 36px;
+                padding: 0px 16px;
+                color: rgb(28,115,231);
+                background-color: white;
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+            }
+
+            .del-btn {
+                float: right;
+                font-size: 15px;
+                font-weight: 500;
+                height: 36px;
+                padding: 0px 16px;
+                margin-right: 10px;
+                color: rgb(218,48,37);
+                background-color: white;
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+            }
+
+            .mytrans_text {
+                background-color: rgb(245,245,245);
+                border-radius: 4px;
+                padding: 1rem;
+                padding-bottom: .1rem;
+                margin-top: 10px;
+                color: rgba(0,0,0,0.54);
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .overflowVisible {
+                overflow: visible !important;
+            }
+
+        </style>
+  </head>
+
+  <body>
+            <a class="navbar-brand nav-title">뉴.배.이</a>
+                <button class="export-btn" type="export" onclick="exportPdf()">PDF 추출하기</button>
+
+
+        <div class="container">
+            <div id="myNews" class="news">
+                <div id="myTitle" class="myTitle" onclick="get();">
+                    <h1>Dibattito. Oltre la moda del selfie: musei e social, un rapporto virtuale o virtuoso?</h1>
+                </div>
+                <hr>
+                <div class="athr-date"><span class="author">Irene Baldriga</span> <span class="date">13/08/2020</span></div>
+                <div id="myDes" class="myDes" onclick="get();">
+                    <div class="des">Il dibattito sul tema è spesso circoscritto a polemiche tra ospiti vip, a partire
+                        da Chiara Ferragni agli Uffizi, e ricerca di nuovi pubblici. Pare più interessante spostarlo su
+                        esperienza dei beni culturali e valorizzazione di opere meno note
+                    </div>
+                </div>
+                <img src="https://www.avvenire.it/c/2020/PublishingImages/c8fa6f83c8c945d68aa64e17b1dcea07/Folla-Monna-Lisa-Gioconda-Louvre.jpg">
+                <div id="myText" class="text">
+                    <div class="paragraph">
+                        <p class="origin" style="cursor: pointer;" onclick="toggle();">È stato detto in varie occasioni
+                            che il secolo che stiamo vivendo è dominato dalla centralità dei musei. In un recente
+                            rapporto, l’Unesco ha stimato che negli ultimi otto anni il numero dei musei nel mondo è
+                            aumentato del 60%, arrivando alla cifra impressionante di 95.000 unità. Si tratta di un
+                            fenomeno culturale, ma anche antropologico, politico e socio-economico: il museo è uno
+                            spazio di continua negoziazione ove si attuano processi partecipativi importanti, si
+                            formulano nuovi sistemi di fruizione del patrimonio, si sperimentano modelli di cittadinanza
+                            attiva, creando ponti tra le diversità, accogliendo le minoranze, sostanziando il valore
+                            dell’identità e della memoria.</p>
+                        <div class="mytrans_text">
+                            <p>우리가 살고 있는 세기는 박물관의 중심성에 의해 지배된다고 여러 차례 언급되었습니다. 최근 보고서에서 유네스코는 지난
+                                8년 동안 세계 박물관의 수가 60% 증가하여 95,000대의 인상적인 수치에 도달했다고 추정했다. 문화 현상이지만 인류학, 정치학, 사회 경제적 현상이기도
+                                합니다. 박물관은 중요한 참여 과정이 이루어지고 새로운 유산 활용 시스템이 형성되고, 적극적인 시민권 모델이 실험되고, 소수 민족을 수용하고, 정체성과 기억의
+                                가치를 실질적으로 부여하는 다양성을 형성합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="textEdit">
+                <h2>원문</h2>
+                <div id="myOrigin" class="myOrigin">
+                    <div id="typePointer"><p name="0">선택 문단</p></div>
+                    <div id="originText" class="originText"><p>번역을 원하는 문단을 클릭하세요.</p></div>
+                </div>
+                <h2>번역</h2>
+                <div class="tab-content" id="myTabContent">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#korean" name="korean" role="tab"
+                               aria-expanded="true">KOR</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#english" name="english" role="tab">ENG</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-pane active" id="korean" role="tabpanel" aria-labelledby="1-tab">
+                        <div class="tab-pane-header"><p>한글로 번역됩니다.</p></div>
+                    </div>
+                    <div class="tab-pane" id="english" role="tabpanel" aria-labelledby="2-tab">
+                        <div class="tab-pane-header"><p>영어로 번역됩니다.</p></div>
+                    </div>
+
+                </div>
+
+                <h2>입력</h2>
+                <div class="mytrans">
+                    <p><textarea id="textArea" placeholder="나의 번역을 입력하세요."></textarea></p>
+                    <button class="save-btn" onclick="insertMyTrans();">저장</button>
+                    <button class="del-btn">본문 삭제</button>
+                </div>
+            </div>
+        </div>
+
+    <script>
+        function exportPdf() {
+            var currentPosition = document.getElementById("myNews").scrollTop;
+            document.getElementById("myNews").style.height = "auto";
+
+            html2canvas(document.querySelector("#myNews")).then(function (canvas) {
+                var imgData = canvas.toDataURL('image/png');
+
+                var imgWidth = 210;
+                var pageHeight = imgWidth * 1.414;
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                var heightLeft = imgHeight;
+                var position = 0;
+
+                var doc = new jsPDF({
+                    'orientation': 'p',
+                    'unit': 'mm',
+                    'format': 'a4'
+                });
+
+                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 20) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                doc.save('sample_A4.pdf');
+            });
+
+            document.getElementById("myNews").style.height = "100%";
+            document.getElementById("myNews").scrollTop = currentPosition;
+        }
+    </script>
+  </body>
+
+</html>

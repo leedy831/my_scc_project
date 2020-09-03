@@ -1,22 +1,61 @@
 import requests
 from bs4 import BeautifulSoup
-from newspaper import Article
 from pymongo import MongoClient
 from datetime import datetime
 
-client = MongoClient('localhost', 27017)
+from selenium import webdriver
+import time
+
+client = MongoClient('mongodb://test:test@localhost',27017)
 db = client.dbSpaProject
 
-
-def insert_init_archive():
-    db.archives.drop()
-    section = "agora"
-    sub_sec = "arte"
+def insert_init_datetime():
+    db.datetimes.drop()
     year = str(datetime.today().year)
     month = str(datetime.today().month)
+    year_list = []
+    anno = datetime.today().year - 4
+    for i in range(5):
+        year_list.append(str(anno))
+        anno += 1
+    month_list = []
+    mese = 1
+    for i in range(12):
+        month_list.append(str(mese))
+        mese += 1
+
+    datetimes = {
+        "cur_year": year,
+        "year_list": year_list,
+        "cur_month": month,
+        "month_list": month_list
+    }
+
+    db.datetimes.insert_one(datetimes)
+
+
+def insert_init_archives(sections, year_list, month_list):
+    db.archives.drop()
+    for section in sections:
+        sub_secs = sections[section]
+        for sub_sec in sub_secs:
+            for year in year_list:
+                for month in month_list:
+                    my_sec = section
+                    my_subsec = sub_sec
+                    my_year = year
+                    my_month = month
+                    create_archives(my_sec, my_subsec, my_year, my_month)
+
+
+def create_archives(sec, sub_sec, yr, mth):
+    section = sec
+    sub_section = sub_sec
+    year = yr
+    month = mth
 
     url_fixed = 'https://www.avvenire.it/Archivio/'
-    url_var = section + '/' + sub_sec + '/' + year + '/' + month
+    url_var = section + '/' + sub_section + '/' + year + '/' + month
     archive_url = url_fixed + url_var
 
     url_receive = archive_url
@@ -35,6 +74,10 @@ def insert_init_archive():
         news_url = "https://www.avvenire.it/" + news_href
 
         archive_contents = {
+            "section": section,
+            "sub_section": sub_section,
+            "year": year,
+            "month": month,
             "title_html": news_title,
             "author": news_author,
             "date": news_date,
@@ -44,25 +87,26 @@ def insert_init_archive():
         db.archives.insert_one(archive_contents)
 
 
-def insert_init_datetime():
-    db.datetimes.drop()
-    year = str(datetime.today().year)
-    month = str(datetime.today().month)
-    year_list = []
-    num = datetime.today().year - 9
-    for i in range(10):
-        year_list.append(str(num))
-        num += 1
-
-    datetimes = {
-        "cur_year": year,
-        "year_list": year_list,
-        "cur_month": month,
-    }
-
-    db.datetimes.insert_one(datetimes)
-
-insert_init_archive()
 insert_init_datetime()
+
+sections = {
+    "agora": ["arte", "cultura", "scienza-e-tecnologia", "spettacoli", "sport"],
+    "attualita": ["azzardo", "caporalato", "carceri", "caritas", "infortuni-sul-lavoro", "legalita", "migranti", "politica", "scuola", "terra-dei-fuochi"],
+    "chiesa": ["benedetto-xvi", "cei", "documenti-cei", "ecumenismo", "giovani", "giubileo", "gmg", "lotta-agli-abusi", "santi-e-beati"],
+    "economia": ["bes", "lavoro", "motori", "risparmio", "sviluppo-felice", "terzo-settore"],
+    "europa": [""],
+    "famiglia-e-vita": ["aborto", "fecondazione-assistita", "fine-vita", "gender", "unioni-civili", "utero-in-affitto"],
+    "mondo": ["africa", "america-latina", "asia", "asia-bibi", "cristiani-perseguitati", "iraq-e-siria", "terrorismo"],
+    "papa": ["commenti", "le-parole", "santa-marta", "viaggi"]
+}
+
+my_date = db.datetimes.find_one({}, {'_id': False})
+year_list = my_date["year_list"]
+month_list = my_date["month_list"]
+
+insert_init_archives(sections, year_list, month_list)
+
+
+
 
 

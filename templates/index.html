@@ -6,6 +6,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+        <meta property="og:title" content="뉴스로 배우는 이탈리아"/>
+        <meta property="og:description" content="뉴스를 번역하며 이탈리아어를 공부합시다."/>
+        <meta property="og:image" content="{{ url_for('static', filename='italy_800x400.png') }}"/>
+
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
               integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -20,41 +24,89 @@
         <!-- 구글폰트 -->
         <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
 
-        <title>개인프로젝트 | ITE</title>
+        <title> 뉴.배.이 | 기사 목록</title>
 
         <!-- style -->
         <style type="text/css">
+            body {
+                background-color: rgb(240,243,244);
+            }
+
+            nav {
+                background-color: rgb(255,255,255);
+                box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.2);
+            }
+
+            .nav-title {
+                font-weight: 900;
+            }
+
             .container {
-                padding-top: 40px;
-                background-color: lightblue;
+                background-color: rgb(248,249,250);
+                padding: 60px 60px 60px;
+                height: 94.4vh;
+            }
+
+            h2 {
+                font-size: 16px;
+                font-weight: 500;
+                margin-bottom: 15px;
+                padding-left: 5px;
             }
 
             .select-date {
                 margin-bottom: 40px;
-                background-color: lightgreen;
+            }
+
+            .select-btn {
+                font-size: 13px;
+                font-weight: 500;
+                height: 30px;
+                padding: 0px 16px;
+                margin-right: 10px;
+                color: rgb(95,99,103);
+                background-color: white;
+                border: 1px solid #dadce0;
+                border-radius: 2px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+            }
+
+            .select-btn:hover {
+                background-color: #dadce0;
+                transition: .5s;
             }
 
             .archive-box {
-                background-color: blue;
+                /*background-color: blue;*/
             }
 
-            .nav-tabs {
-                border-bottom: none;
+
+            ul.nav {
+                border: 0px;
+            }
+
+            a.nav-link.active {
+                border: 0px;
             }
 
             .nav-tabs .nav-link.active {
-                background-color: #e2e2e2;
-                border-bottom: #e2e2e2;
+                font-weight: bold;
+            }
+
+            .nav-tabs .nav-link.active {
+                background-color: white;
+                border-bottom: solid 1px white;
                 font-weight: bold;
             }
 
             .tab-pane.active .tab-pane-header {
-                height: 100%;
+                height: 60vh;
                 padding: 2rem;
-                background-color: #e2e2e2;
-                border-top-right-radius: .5rem;
-                border-top-left-radius: .5rem;
-                margin-bottom: 1rem;
+                background-color: white;
+                border-radius: 8px;
+                margin-bottom: 40px;
+                box-shadow: 0px 1px 3px rgba(0,0,0,.1);
+                overflow: auto;
             }
 
             .tab-pane:first-child .tab-pane-header {
@@ -67,78 +119,109 @@
                 clear: both;
             }
 
-            .search-btn {
-                background-color: orange;
-                float: right;
-                margin: 10px;
-            }
-
             .box-articles {
-                background-color: hotpink;
-                height: 80%;
-                width: 100%;
-                margin: auto;
+                height: auto;
+                width: fit-content;
+                margin: 0px auto;
             }
 
             .article {
                 float: left;
-                width: 300px;
-                height: 100px;
-                background-color: lightgrey;
-                border: black 1px solid;
-                margin: 25px;
-                padding: 9px;
+                width: 250px;
+                height: 130px;
+                background-color: white;
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                margin: 25px 10px;
+                padding: 10px;
                 font-size: 13px;
             }
 
+            .article:hover {
+                background-color: #dadce0;
+                transition: .5s;
+            }
+
+            .article:active {
+                border: 4px solid rgb(28,115,231);
+            }
+
             .type {
-                background-color: lightblue;
-                margin-bottom: 3px;
+                /*background-color: lightblue;*/
+                margin-bottom: 9px;
+                font-weight: 500;
             }
 
             .title {
-                background-color: lightgreen;
+                /*background-color: lightgreen;*/
                 margin-bottom: 6px;
+                font-weight: 700;
             }
 
             .author {
-                background-color: lightblue;
+                /*background-color: lightblue;*/
+                color: #004a94;
                 display: inline;
+                font-weight: 500;
             }
 
             .date {
-                background-color: lightblue;
+                /*background-color: lightblue;*/
+                color: #727274;
                 display: inline;
                 float: right;
+                font-weight: 500;
+            }
+
+            .search-btn {
+                float: right;
+                font-size: 15px;
+                font-weight: 500;
+                height: 36px;
+                padding: 0px 16px;
+                margin-right: 15px;
+                color: rgb(28,115,231);
+                background-color: white;
+                border: 1px solid #dadce0;
+                border-radius: 4px;
+            }
+
+            .search-btn:hover {
+                background-color: rgb(28,115,231);
+                color: white;
+                transition: .5s;
             }
 
         </style>
         <script>
             $(document).ready(function () {
                 updateDateOptions();
-                showArticles();
                 toggleTab();
             })
 
             function updateDateOptions() {
                 $.ajax({
                     type: "GET",
-                    url: "/date",
+                    url: "/init",
                     data: {},
                     success: function (response) {
                         let datetime = response["datetime"];
+
                         let cur_year = datetime["cur_year"];
                         let year_list = datetime["year_list"];
                         let cur_month = datetime["cur_month"];
-                        let month_list = [ "", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+                        let month_list = ["", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
 
                         makeYearOptions(year_list, cur_year);
                         makeMonthOptions(month_list, cur_month);
+
+                        getActiveContents();
                     }
                 })
             }
 
             function makeYearOptions(year_list, cur_year) {
+                $("#select-year").empty();
                 for (let i = 0; i < year_list.length; i++) {
                     if (year_list[i] == cur_year) {
                         tempHtml = `<option selected value=${year_list[i]}>${year_list[i]}</option>`
@@ -150,6 +233,7 @@
             }
 
             function makeMonthOptions(month_list, cur_month) {
+                $("#select-month").empty();
                 for (let i = 1; i < month_list.length; i++) {
                     if (String(i) == cur_month) {
                         tempHtml = `<option selected value=${String(i)}>${month_list[i]}</option>`
@@ -160,7 +244,36 @@
                 }
             }
 
-            function showArticles() {
+            function getActiveContents() {
+                let curSection = $('ul#myTab > li.nav-item > a.active').attr('name');
+                let curSubsec = $('div#myTabContent > div.active > div.tab-pane-header > ul > li.nav-item > a.active').attr('name');
+                let curYear = $('#select-year').val();
+                let curMonth = $('#select-month').val();
+
+                getArchives(curSection, curSubsec, curYear, curMonth);
+            }
+
+            function getArchives(curSection, curSubsec, curYear, curMonth) {
+                $.ajax({
+                    type: "POST",
+                    url: "/list",
+                    data: {
+                        sec_give: curSection,
+                        subsec_give: curSubsec,
+                        year_give: curYear,
+                        month_give: curMonth
+                    },
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            showArchives();
+                        } else {
+                            alert("해당 기사 없음!");
+                        }
+                    }
+                })
+            }
+
+            function showArchives() {
                 $("div#myTabContent > div.active > div.tab-pane-header > div.box-articles").empty()
 
                 $.ajax({
@@ -170,20 +283,41 @@
                     success: function (response) {
                         let articles = response["archives"];
                         for (let i = 0; i < articles.length; i++) {
-                            makeArticles(articles[i]["type"], articles[i]["title_html"], articles[i]["author"], articles[i]["date"])
+                            makeArchive(articles[i]["type"], articles[i]["title_html"], articles[i]["author"], articles[i]["date"], articles[i]["url"])
                         }
                     }
                 })
             }
 
-            function makeArticles(type, title_html, author, date) {
-                let temp_html = `<div class="article">
-                                    <p class="type">"${type}"</p>
-                                    <p class="title">"${title_html}"</p>
-                                    <p class="author">"${author}"</p>
-                                    <p class="date">"${date}"</p>
+            function makeArchive(type, title_html, author, date, url) {
+                let temp_html = `<div style="cursor: pointer;" onclick="getNews('${url}', '${type}', '${author}', '${date}');" class="article" >
+                                    <p class="type">[${type}]</p>
+                                    <p class="title">${title_html}</p>
+                                    <p class="author">${author}</p>
+                                    <p class="date">${date}</p>
                                  </div>`;
                 $("div#myTabContent > div.active > div.tab-pane-header > div.box-articles").append(temp_html);
+            }
+
+            function getNews(url, type, author, date) {
+                $.ajax({
+                    type: "POST",
+                    url: "/news",
+                    data: {
+                        url_give: url,
+                        type_give: type,
+                        author_give: author,
+                        date_give: date
+                    },
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            alert('기사 불러오기 성공!');
+                            window.location = "/newsedit";
+                        } else {
+                            alert("기사 불러오기 실패!");
+                        }
+                    }
+                })
             }
 
             function toggleTab() {
@@ -193,58 +327,27 @@
                 });
             }
 
-            function getUrlContents() {
-                let curSection = $('ul#myTab > li.nav-item > a.active').attr('name');
-                let curSubsec = $('div#myTabContent > div.active > div.tab-pane-header > ul > li.nav-item > a.active').attr('name');
-                let curYear = $('#select-year').val();
-                let curMonth = $('#select-month').val();
-
-                getArticles(curSection, curSubsec, curYear, curMonth);
-            }
-
-            function getArticles(curSection, curSubsec, curYear, curMonth) {
-                $.ajax({
-                    type: "POST",
-                    url: "/list",
-                    data: {
-                        section_give: curSection,
-                        subsec_give: curSubsec,
-                        year_give: curYear,
-                        month_give: curMonth
-                    },
-                    success: function (response) {
-                        if (response["result"] == "success") {
-                            showArticles();
-                            alert("기사 목록 불러오기 완료!");
-                        } else {
-                            alert("해당 기사 없음!");
-                        }
-                    }
-                })
-            }
-
         </script>
     </head>
 
     <body>
-        <nav class="navbar navbar-light bg-light justify-content-between">
-            <a class="navbar-brand">ITE</a>
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search by URL" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+        <nav class="navbar justify-content-between">
+            <a class="navbar-brand nav-title">뉴.배.이</a>
         </nav>
 
         <div class="container">
             <div class="select-date">
+                <h2>날짜</h2>
                 <select class="select-btn" id="select-year">
+                    <option selected value="year">Anno</option>
                 </select>
                 <select class="select-btn" id="select-month">
+                     <option selected value="month">Mese</option>
                 </select>
-                <button onclick="getUrlContents();">Search</button>
             </div>
 
             <div class="archive-box">
+                <h2>기사 목록</h2>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#agora" name="agora" role="tab" aria-controls="home" aria-expanded="true">Agorà</a>
@@ -295,20 +398,46 @@
                                     <a class="nav-link" data-toggle="tab" role="tab" href="#" name="sport">Sport</a>
                                 </li>
                             </ul>
-                            <div class="box-articles clearfix">
-                                <div class="article">
-                                    <p class="type">Articolo</p>
-                                    <p class="title"><em>Dibattito</em> <span>Oltre la moda del selfie: musei e social, un rapporto virtuale o virtuoso?</span>
-                                    </p>
-                                    <p class="author">Irene Baldriga</p>
-                                    <p class="date">13/08/2020</p>
-                                </div>
-                            </div>
+                            <div class="box-articles clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show" id="chiesa" role="tabpanel" aria-labelledby="3-tab">
+                        <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="benedetto-xvi">Benedetto XVI</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="cei">Cei</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="documenti-cei">Documenti Cei</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="ecumenismo">Ecumenismo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giovani">Giovani</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giubileo">Giubileo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="gmg">Gmg</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="lotta-agli-abusi">Lotta Agli Abusi</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="santi-e-beati">Santi E Beati</a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="attualita" role="tabpanel" aria-labelledby="2-tab">
                         <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                            <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="azzardo">Azzardo</a>
                                 </li>
@@ -343,43 +472,9 @@
                             <div class="box-articles clearfix"></div>
                         </div>
                     </div>
-                    <div class="tab-pane fade show" id="chiesa" role="tabpanel" aria-labelledby="3-tab">
-                        <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="benedetto-xvi">Benedetto XVI</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="cei">Cei</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="documenti-cei">Documenti Cei</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="ecumenismo">Ecumenismo</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giovani">Giovani</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="giubileo">Giubileo</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="gmg">Gmg</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="lotta-agli-abusi">Lotta Agli Abusi</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-toggle="tab" role="tab" href="#" name="santi-e-beati">Santi E Beati</a>
-                                </li>
-                            </ul>
-                            <div class="box-articles clearfix"></div>
-                        </div>
-                    </div>
                     <div class="tab-pane fade show" id="economia" role="tabpanel" aria-labelledby="4-tab">
                         <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                            <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="bes">Bes</a>
                                 </li>
@@ -404,11 +499,17 @@
                     </div>
                     <div class="tab-pane fade show" id="europa" role="tabpanel" aria-labelledby="5-tab">
                         <div class="tab-pane-header">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" role="tab" href="#" name=""></a>
+                                </li>
+                            </ul>
+                            <div class="box-articles clearfix"></div>
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="famiglia-e-vita" role="tabpanel" aria-labelledby="6-tab">
                         <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                            <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="aborto">Aborto</a>
                                 </li>
@@ -433,7 +534,7 @@
                     </div>
                     <div class="tab-pane fade show" id="mondo" role="tabpanel" aria-labelledby="7-tab">
                         <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                            <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="africa">Africa</a>
                                 </li>
@@ -461,7 +562,7 @@
                     </div>
                     <div class="tab-pane fade show" id="papa" role="tabpanel" aria-labelledby="8-tab">
                         <div class="tab-pane-header">
-                            <ul class="nav nav-tabs" id="myTab_sub" role="tablist">
+                            <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" data-toggle="tab" role="tab" href="#" name="commenti">Commenti</a>
                                 </li>
@@ -479,18 +580,19 @@
                         </div>
                     </div>
                 </div>
+                <button class="search-btn" onclick="getActiveContents();">검색</button>
             </div>
 
-        <!-- Optional JavaScript -->
-        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
-<!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
-<!--                crossorigin="anonymous"></script>-->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-                crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-                crossorigin="anonymous"></script>
+            <!-- Optional JavaScript -->
+            <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
+            <!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
+            <!--                crossorigin="anonymous"></script>-->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                    crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                    crossorigin="anonymous"></script>
     </body>
 </html>

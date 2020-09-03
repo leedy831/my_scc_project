@@ -3,73 +3,52 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from newspaper import Article
-from datetime import datetime
-
+from selenium import webdriver
+import time
 
 app = Flask(__name__)
 
+# client = MongoClient('mongodb://test:test@localhost',27017)
 client = MongoClient('localhost', 27017)
-db = client.dbSpaProject
+db = client.dbSpaProject_test
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
-@app.route('/date', methods=['GET'])
-def show_datetime():
-    datetimes = db.datetimes.find_one({}, {'_id': False})
-    return jsonify({'result': 'success', 'datetime': datetimes})
+@app.route('/init', methods=['GET'])
+def show_init_data():
+    init_dates = db.datetimes.find_one({}, {'_id': False})
+    return jsonify({'result': 'success', 'datetime': init_dates})
 
 
 @app.route('/list', methods=['POST'])
 def get_archives():
-    db.archives.drop()
+    db.myarchives.drop()
 
-    section_receive = request.form['section_give']
+    sec_receive = request.form['sec_give']
     subsec_receive = request.form['subsec_give']
     year_receive = request.form['year_give']
     month_receive = request.form['month_give']
 
-    url_fixed = 'https://www.avvenire.it/Archivio/'
-    url_var = section_receive + '/' + subsec_receive + '/' + year_receive + '/' + month_receive
-    archive_url = url_fixed + url_var
+    arcs = list(db.archives.find({"section": sec_receive, "sub_section": subsec_receive, "year": year_receive, "month": month_receive}, {'_id': False}))
 
-    url_receive = archive_url
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-    data = requests.get(url_receive, headers=headers)
-    soup = BeautifulSoup(data.text, 'html.parser')
-    archives = soup.select('#bodyBlock_bodyColumn > div.archivio > div > div > div')
-
-    for archive in archives:
-        news_title = str(archive.select_one('h1'))[4:-5]
-        news_author = archive.select_one('p.author').text
-        news_date = archive.select_one('p.rDate').text.strip()
-        news_type = archive.select_one('div')['class'][2]
-        news_href = archive.select_one('a')['href']
-        news_url = "https://www.avvenire.it/" + news_href
-
-        archive_contents = {
-            "title_html": news_title,
-            "author": news_author,
-            "date": news_date,
-            "type": news_type,
-            "url": news_url
-        }
-        db.archives.insert_one(archive_contents)
+    for arc in arcs:
+        db.myarchives.insert_one(arc)
 
     return jsonify({'result': 'success'})
 
-
 @app.route('/list', methods=['GET'])
 def show_archives():
-    archives = list(db.archives.find({}, {'_id': False}))
-    return jsonify({'result': 'success', 'archives': archives})
+    my_archives = list(db.myarchives.find({}, {'_id': False}))
+    return jsonify({'result': 'success', 'archives': my_archives})
 
 
-@app.route('/edit', methods=['POST'])
+@app.route('/news', methods=['POST'])
 def get_news():
+    db.mynews.drop()
+
     url_receive = request.form['url_give']
     type_receive = request.form['type_give']
     author_receive = request.form['author_give']
@@ -102,7 +81,6 @@ def get_news():
 
     return jsonify({'result': 'success'})
 
-
 def textifyNews(text):
     news_text = []
     text_list = text.split("\n")
@@ -111,13 +89,126 @@ def textifyNews(text):
             news_text.append(i)
     return news_text
 
-
-@app.route('/edit', methods=['GET'])
+@app.route('/news', methods=['GET'])
 def show_news():
-    mynews = db.mynews.find_one({}, {'_id': 0})
+    mynews = db.mynews.find_one({}, {'_id': False})
 
     return jsonify({'result': 'success', 'news': mynews})
 
+@app.route('/newsedit')
+def news_edit():
+    return render_template("edit.html")
+
+
+@app.route('/translate', methods=["POST"])
+def get_translate():
+    db.mytrans.drop()
+
+    title = db.mynews.find_one({}, {"title": 1})
+    des = db.mynews.find_one({}, {"description": 1})
+    txts = db.mynews.find_one({}, {"text": 1})
+
+    title = title['title']
+    des = des['description']
+    txts = list(txts['text'])
+
+    kakao = kakao_translate(title, des, txts)
+
+    db.mytrans.insert_one(kakao)
+
+    k = db.mytrans.find_one({"translator": "kakao"}, {'_id': False})
+
+    return jsonify({'result': 'success', 'kakao': k})
+
+def kakao_translate(title, des, txts):
+    url = "https://translate.kakao.com/translator/translate.json"
+
+    headers = {
+        "Referer": "https://translate.kakao.com/",
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    langs = ["ko", "en"]
+    k_title = [title]
+    k_des = [des]
+    k_txts = []
+
+    # title
+    for lang in langs:
+        data = {
+            "queryLanguage": "it",
+            "resultLanguage": lang,
+            "q": title
+        }
+
+        resp = requests.post(url, headers=headers, data=data)
+        data = resp.json()
+
+        output = data['result']['output'][0]
+        k_title.append(" ".join(output))
+
+    # description
+    for lang in langs:
+        data = {
+            "queryLanguage": "it",
+            "resultLanguage": lang,
+            "q": des
+        }
+
+        resp = requests.post(url, headers=headers, data=data)
+        data = resp.json()
+
+        output = data['result']['output'][0]
+        k_des.append(" ".join(output))
+
+    # texts
+    for txt in txts:
+        a = [txt]
+        for lang in langs:
+            data = {
+                "queryLanguage": "it",
+                "resultLanguage": lang,
+                "q": txt
+            }
+
+            resp = requests.post(url, headers=headers, data=data)
+            data = resp.json()
+
+            output = data['result']['output'][0]
+            a.append(" ".join(output))
+        k_txts.append(a)
+
+    result = {
+        'translator': 'kakao',
+        'title': k_title,
+        'description': k_des,
+        'texts': k_txts
+    }
+
+    return result
+
+@app.route('/translate', methods=["GET"])
+def show_translate():
+    k = db.mytrans.find_one({"translator": "kakao"}, {'_id': False})
+    return jsonify({'result': 'success', 'kakao': k})
+
+@app.route('/translatetexts', methods=["POST"])
+def get_and_show_trans_texts():
+    index_receive = request.form['index_give']
+
+    index = int(index_receive)
+
+    k = db.mytrans.find_one({"translator": "kakao"}, {'_id': False})
+    k_text = {
+        'text': k["texts"][index]
+    }
+
+    db.mytranstxt.drop()
+    db.mytranstxt.insert_one(k_text)
+
+    result = db.mytranstxt.find_one({}, {'_id': False})
+
+    return jsonify({'result': 'success', 'kakao_text': result})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
